@@ -4,10 +4,12 @@ import { env } from './env.js';
 
 const startServer = async () => {
   try {
-    await connectDB(env.MONGO_URI); // wait for Mongo connection
+    await connectDB(env.MONGO_URI);
 
-    const server = app.listen(env.PORT, () => {
-      console.log(`🚀 Listening: http://localhost:${env.PORT}`);
+    const host = process.env.HOST || '0.0.0.0';
+
+    const server = app.listen(env.PORT, host, () => {
+      console.log(`🚀 Listening: http://${host}:${env.PORT}`);
     });
 
     server.on('error', (err: NodeJS.ErrnoException) => {

@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 
 import api from './api/index.js';
+import { corsOptions } from './config/cors.js';
 import { TMessageResponse } from './interfaces/message-response.js';
 import * as middlewares from './middlewares.js';
 
@@ -11,13 +12,7 @@ const app = express();
 
 app.use(morgan('dev'));
 app.use(helmet());
-app.use(
-  cors({
-    origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
-    credentials: true,
-    optionsSuccessStatus: 200,
-  }),
-);
+app.use(cors(corsOptions));
 app.use(express.json());
 
 app.get<object, TMessageResponse>('/', (req, res) => {
