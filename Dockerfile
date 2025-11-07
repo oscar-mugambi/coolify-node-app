@@ -1,5 +1,6 @@
 # --- Build Stage ---
-FROM node:20-alpine AS builder
+FROM node:24-alpine AS builder
+
 
 # Install pnpm globally
 RUN npm install -g pnpm
@@ -19,17 +20,20 @@ COPY . .
 RUN pnpm run build
 
 # --- Production image ---
-FROM node:20-alpine
+FROM node:24-alpine
 
 # Install pnpm (needed for production dependencies)
 RUN npm install -g pnpm
 
 WORKDIR /app
 
-# Copy built files + node_modules
+
+COPY --from=builder /app/package.json /app/pnpm-lock.yaml ./
+RUN pnpm install --prod --frozen-lockfile
+
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./
+
+
 
 # Expose default port
 ENV PORT=3000
